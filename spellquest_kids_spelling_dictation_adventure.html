@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpellQuest - Kids Spelling & Dictation Adventure</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Fredoka & Nunito for kid-friendly aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti for rewards -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            nunito: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            skyBlue: '#38bdf8',
+            sunnyYellow: '#facc15',
+            playfulPink: '#f472b6',
+            actionPurple: '#a855f7',
+            mintGreen: '#4ade80',
+            paperYellow: '#fef08a'
+          },
+          boxShadow: {
+            'pop': '0 8px 0px rgba(0, 0, 0, 0.15)',
+            'pop-sm': '0 4px 0px rgba(0, 0, 0, 0.15)',
+            'pop-lg': '0 12px 0px rgba(0, 0, 0, 0.15)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      user-select: none;
+      background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #faf5ff 100%);
+    }
+
+    /* Floating balloon bounce animation */
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatUp 3s ease-in-out infinite;
+    }
+
+    /* Pulse effect for audio button */
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+    }
+    .pulse-ring {
+      animation: pulseRing 2s infinite;
+    }
+
+    /* Dictation paper background styling */
+    .paper-lines {
+      background: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #cbd5e1 31px,
+        #cbd5e1 32px
+      );
+      line-height: 32px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-purple-300">
+
+  <!-- Navigation Header -->
+  <header class="bg-white/80 backdrop-blur-md border-b-4 border-slate-200 sticky top-0 z-40 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo -->
+      <div onclick="switchView('dashboard')" class="flex items-center space-x-3 cursor-pointer group">
+        <div class="w-12 h-12 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-pop-sm group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-spell-check"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold tracking-wide text-purple-700 leading-none">SpellQuest</h1>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kids Spelling & Dictation</p>
+        </div>
+      </div>
+
+      <!-- Stats Bar & Navigation -->
+      <div class="flex items-center space-x-3">
+        <!-- Grade Selector Badge -->
+        <div class="hidden sm:flex items-center bg-purple-100 border-2 border-purple-300 rounded-xl px-3 py-1">
+          <i class="fa-solid fa-graduation-cap text-purple-600 mr-2"></i>
+          <select id="gradeSelect" onchange="changeGrade(this.value)" class="bg-transparent font-bold text-purple-800 text-sm focus:outline-none cursor-pointer">
+            <option value="k">Kindergarten</option>
+            <option value="1st" selected>1st Grade</option>
+            <option value="2nd">2nd Grade</option>
+            <option value="3rd">3rd Grade</option>
+            <option value="4th">4th Grade</option>
+            <option value="custom">My Custom List ⭐</option>
+          </select>
+        </div>
+
+        <!-- Star Points -->
+        <div class="flex items-center bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-xl shadow-sm">
+          <i class="fa-solid fa-star text-amber-500 text-lg mr-1.5 animate-bounce"></i>
+          <span id="starCounter" class="font-extrabold text-amber-800 text-lg">0</span>
+        </div>
+
+        <!-- Home Button -->
+        <button onclick="switchView('dashboard')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl border-2 border-slate-300 active:translate-y-0.5 transition-all" title="Home Playground">
+          <i class="fa-solid fa-house text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dynamic View Container -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    
+    <!-- ================= DASHBOARD VIEW ================= -->
+    <section id="view-dashboard" class="space-y-8">
+      
+      <!-- Hero Banner -->
+      <div class="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-400 rounded-3xl p-6 sm:p-8 text-white shadow-pop-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
+        <div class="z-10 max-w-lg space-y-3 text-center md:text-left">
+          <span class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase text-yellow-200 border border-white/30">
+            ✨ Interactive Learning Playground
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">Master Words & Sentences with Fun Games!</h2>
+          <p class="text-purple-100 text-sm sm:text-base font-medium">Practice sight words, high-frequency words, or snap a photo of your school spelling list to play!</p>
+          
+          <div class="pt-2 flex flex-wrap gap-3 justify-center md:justify-start">
+            <button onclick="switchView('photo-upload')" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-extrabold px-5 py-3 rounded-2xl shadow-pop-sm flex items-center space-x-2 transition-transform active:scale-95">
+              <i class="fa-solid fa-camera text-lg"></i>
+              <span>Scan Spelling Homework</span>
+            </button>
+            <button onclick="switchView('word-list')" class="bg-white/20 hover:bg-white/30 text-white font-bold px-4 py-3 rounded-2xl border border-white/40 flex items-center space-x-2 transition-transform">
+              <i class="fa-solid fa-book-open"></i>
+              <span>View Word Bank</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mascot Illustration Container -->
+        <div class="mt-6 md:mt-0 z-10 flex-shrink-0 relative">
+          <div class="w-40 h-40 sm:w-48 sm:h-48 bg-white/20 rounded-full flex items-center justify-center animate-float border-4 border-white/30 shadow-inner">
+            <i class="fa-solid fa-owl text-7xl text-yellow-300 drop-shadow-md"></i>
+          </div>
+        </div>
+
+        <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-white/10 rounded-full blur-2xl"></div>
+      </div>
+
+      <!-- Grade Level Fast Picker -->
+      <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm flex items-center justify-between overflow-x-auto gap-2">
+        <span class="font-bold text-slate-500 text-xs uppercase tracking-wider whitespace-nowrap">Grade Level:</span>
+        <div class="flex space-x-2">
+          <button onclick="changeGrade('k')" class="grade-btn bg-slate-100 hover:bg-purple-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-sm border border-slate-200 transition-colors" data-grade="k">K</button>
+          <button onclick="changeGrade('1st')" class="grade-btn bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-sm border border-purple-700 shadow-sm" data-grade="1st">1st</button>
+          <button onclick="changeGrade('2nd')" class="grade-btn bg-slate-100 hover:bg-purple-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-sm border border-slate-200 transition-colors" data-grade="2nd">2nd</button>
+          <button onclick="changeGrade('3rd')" class="grade-btn bg-slate-100 hover:bg-purple-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-sm border border-slate-200 transition-colors" data-grade="3rd">3rd</button>
+          <button onclick="changeGrade('4th')" class="grade-btn bg-slate-100 hover:bg-purple-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-sm border border-slate-200 transition-colors" data-grade="4th">4th</button>
+          <button onclick="changeGrade('custom')" class="grade-btn bg-amber-100 text-amber-800 hover:bg-amber-200 px-3 py-1.5 rounded-xl font-bold text-sm border border-amber-300" data-grade="custom">Custom ⭐</button>
+        </div>
+      </div>
+
+      <!-- Action Games & Test Modes Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Game 1: Keepy Uppy Sky Drop -->
+        <div onclick="startKeepyUppyGame()" class="bg-white rounded-3xl p-6 border-4 border-sky-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 z-10">
+            <div class="w-14 h-14 bg-sky-100 border-2 border-sky-300 text-sky-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-cloud-arrow-down"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide text-sky-500">Arcade Action Game</span>
+              <h3 class="text-2xl font-bold text-slate-800">Keepy-Uppy Sky Drop</h3>
+              <p class="text-slate-600 text-sm mt-1">Type the words before they float down and touch the ground!</p>
+            </div>
+          </div>
+          <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
+            <span class="text-xs font-extrabold text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">Fast Typing Fun</span>
+            <span class="bg-sky-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-sky-600 transition-colors">Play Now <i class="fa-solid fa-play ml-1"></i></span>
+          </div>
+        </div>
+
+        <!-- Game 2: Fill in the Blank / Letter Pop -->
+        <div onclick="startFillBlankGame()" class="bg-white rounded-3xl p-6 border-4 border-pink-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 z-10">
+            <div class="w-14 h-14 bg-pink-100 border-2 border-pink-300 text-pink-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-puzzle-piece"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide text-pink-500">Word Puzzle Game</span>
+              <h3 class="text-2xl font-bold text-slate-800">Letter Pop & Fill</h3>
+              <p class="text-slate-600 text-sm mt-1">Find missing phonics letters and complete sight word puzzles!</p>
+            </div>
+          </div>
+          <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
+            <span class="text-xs font-extrabold text-pink-600 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">Phonics Practice</span>
+            <span class="bg-pink-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-pink-600 transition-colors">Play Now <i class="fa-solid fa-play ml-1"></i></span>
+          </div>
+        </div>
+
+        <!-- Mode 3: School Spelling Test & Dictation -->
+        <div onclick="startSpellingTest()" class="bg-white rounded-3xl p-6 border-4 border-emerald-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 z-10">
+            <div class="w-14 h-14 bg-emerald-100 border-2 border-emerald-300 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-pen-ruler"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide text-emerald-600">School Test Practice</span>
+              <h3 class="text-2xl font-bold text-slate-800">Spelling & Dictation Test</h3>
+              <p class="text-slate-600 text-sm mt-1">Replicates real classroom tests with words and full dictation sentences!</p>
+            </div>
+          </div>
+          <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
+            <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Full Practice</span>
+            <span class="bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-emerald-600 transition-colors">Start Test <i class="fa-solid fa-circle-check ml-1"></i></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Current Active Word List Preview -->
+      <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-xl font-bold text-slate-800">Current Word Bank (<span id="activeGradeTitle">1st Grade</span>)</h3>
+            <p class="text-xs text-slate-500 font-semibold">Includes high frequency words, sight words & dictation sentences</p>
+          </div>
+          <button onclick="switchView('word-list')" class="text-purple-600 font-bold text-sm hover:underline flex items-center">
+            Edit / Manage List <i class="fa-solid fa-chevron-right text-xs ml-1"></i>
+          </button>
+        </div>
+
+        <div id="dashboardWordChips" class="flex flex-wrap gap-2"></div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100">
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Dictation Sentences Preview:</span>
+          <ul id="dashboardSentencePreview" class="mt-2 space-y-1 text-sm text-slate-700 font-medium"></ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= PHOTO UPLOAD / OCR SCANNER VIEW ================= -->
+    <section id="view-photo-upload" class="hidden space-y-6 max-w-3xl mx-auto">
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to Dashboard
+        </button>
+        <span class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full border border-amber-300">
+          ✨ Powered by Gemini Vision API
+        </span>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-purple-200 shadow-pop space-y-6">
+        <div class="text-center space-y-2">
+          <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-3xl flex items-center justify-center text-3xl mx-auto">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-800">Snap or Upload Your Spelling Worksheet</h2>
+          <p class="text-slate-600 text-sm max-w-md mx-auto">Upload a photo of your weekly school spelling list or dictation worksheet. Gemini will automatically extract the words and sentences!</p>
+        </div>
+
+        <div id="dropZone" onclick="document.getElementById('photoInput').click()" class="border-3 border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-50 rounded-2xl p-8 text-center cursor-pointer transition-all">
+          <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+          <div id="uploadPrompt" class="space-y-3">
+            <i class="fa-solid fa-cloud-arrow-up text-4xl text-purple-400"></i>
+            <p class="font-bold text-purple-800 text-base">Click or Drag & Drop Photo Here</p>
+            <p class="text-xs text-slate-500">Supports JPG, PNG, WEBP worksheets</p>
+          </div>
+          <div id="imagePreviewContainer" class="hidden space-y-3">
+            <img id="imagePreview" src="" alt="Worksheet Preview" class="max-h-64 mx-auto rounded-xl border-2 border-purple-300 shadow-md">
+            <p class="text-xs text-slate-500 font-semibold">Click to choose a different photo</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+          <label class="block text-xs font-bold text-slate-600 uppercase">Gemini API Key (Optional Override):</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="Uses runtime key by default..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+
+        <button id="extractBtn" onclick="processPhotoWithGemini()" disabled class="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white font-extrabold py-3.5 rounded-2xl shadow-pop-sm flex items-center justify-center space-x-2 transition-all">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Scan Photo & Extract List</span>
+        </button>
+
+        <div id="ocrLoading" class="hidden text-center py-4 space-y-3">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-purple-500 border-t-transparent"></div>
+          <p class="font-bold text-purple-700 animate-pulse text-sm">Gemini is reading your spelling worksheet...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WORD BANK & MANUAL LIST MANAGER VIEW ================= -->
+    <section id="view-word-list" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to Dashboard
+        </button>
+        <button onclick="switchView('photo-upload')" class="bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold px-3 py-1.5 rounded-xl text-sm flex items-center">
+          <i class="fa-solid fa-camera mr-1.5"></i> Scan Photo Instead
+        </button>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Word Bank Manager</h2>
+            <p class="text-sm text-slate-500">Add custom words and dictation sentences or choose preset grade lists.</p>
+          </div>
+          <button onclick="resetCurrentListToDefault()" class="text-xs font-bold text-slate-500 hover:text-red-500 border border-slate-300 px-3 py-1.5 rounded-xl">
+            Reset to Default Words
+          </button>
+        </div>
+
+        <!-- Add New Word Input Row -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+          <h4 class="font-bold text-slate-700 text-sm">Add New Word</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input type="text" id="newWordInput" placeholder="Word (e.g. happy)" class="px-3 py-2 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400">
+            <input type="text" id="newSentenceInput" placeholder="Example sentence (optional)" class="px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+            <button onclick="addCustomWord()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl px-4 py-2 shadow-pop-sm flex items-center justify-center">
+              <i class="fa-solid fa-plus mr-1"></i> Add Word
+            </button>
+          </div>
+        </div>
+
+        <!-- Add Dictation Sentence Input -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+          <h4 class="font-bold text-slate-700 text-sm">Add Dictation Sentence</h4>
+          <div class="flex gap-3">
+            <input type="text" id="newDictationInput" placeholder="Complete sentence (e.g. The cat sat on the mat.)" class="flex-grow px-3 py-2 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <button onclick="addCustomDictationSentence()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-4 py-2 shadow-pop-sm flex items-center justify-center">
+              <i class="fa-solid fa-plus mr-1"></i> Add Sentence
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-700 text-sm">Current Words (<span id="manageWordCount">0</span>)</h4>
+          <div id="manageWordsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2"></div>
+        </div>
+
+        <div class="space-y-3 pt-4 border-t border-slate-100">
+          <h4 class="font-bold text-slate-700 text-sm">Dictation Sentences (<span id="manageSentenceCount">0</span>)</h4>
+          <ul id="manageSentencesContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= GAME 1: KEEPY-UPPY SKY DROP ARCADE ================= -->
+    <section id="view-game-keepy-uppy" class="hidden space-y-4">
+      <div class="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border-2 border-sky-200 shadow-sm">
+        <button onclick="exitKeepyUppyGame()" class="text-slate-500 hover:text-slate-800 font-bold text-sm flex items-center">
+          <i class="fa-solid fa-xmark mr-1.5 text-base"></i> Exit Game
+        </button>
+
+        <div class="flex items-center space-x-6">
+          <div class="text-center">
+            <span class="text-[10px] uppercase font-extrabold text-slate-400 block">Score</span>
+            <span id="keepyScore" class="font-extrabold text-sky-600 text-xl leading-none">0</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[10px] uppercase font-extrabold text-slate-400 block">Streak</span>
+            <span id="keepyStreak" class="font-extrabold text-amber-500 text-xl leading-none">0🔥</span>
+          </div>
+          <div class="text-center">
+            <span class="text-[10px] uppercase font-extrabold text-slate-400 block">Lives</span>
+            <div id="keepyLives" class="flex space-x-1 text-red-500 text-sm">
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative bg-gradient-to-b from-sky-300 via-sky-100 to-emerald-100 rounded-3xl border-4 border-sky-400 shadow-pop overflow-hidden h-[450px]">
+        <canvas id="keepyCanvas" class="w-full h-full block cursor-default"></canvas>
+
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md bg-white/90 backdrop-blur-md p-2.5 rounded-2xl border-2 border-sky-300 shadow-lg flex items-center space-x-2">
+          <button onclick="speakTargetKeepyWord()" class="w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+          <input type="text" id="keepyInput" placeholder="Type falling balloon word..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" class="w-full px-3 py-2 text-xl font-extrabold text-sky-900 bg-transparent focus:outline-none placeholder:text-slate-400 placeholder:text-base placeholder:font-normal">
+        </div>
+
+        <div id="keepyOverlay" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 text-center">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-sky-400 max-w-sm w-full space-y-4 shadow-pop-lg animate-float">
+            <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-3xl mx-auto">
+              <i class="fa-solid fa-balloon"></i>
+            </div>
+            <h3 id="keepyOverlayTitle" class="text-2xl font-extrabold text-slate-800">Keepy-Uppy Sky Drop</h3>
+            <p id="keepyOverlayText" class="text-slate-600 text-sm">Type words accurately before balloons drop to the ground. Get combo streaks for big star points!</p>
+            <button onclick="startKeepyUppyGameLoop()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-3 rounded-2xl shadow-pop-sm transition-transform active:scale-95">
+              Start Playing! 🚀
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= GAME 2: FILL IN THE BLANK / LETTER POP ================= -->
+    <section id="view-game-fill-blank" class="hidden space-y-6 max-w-2xl mx-auto">
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
+          <i class="fa-solid fa-xmark mr-1.5"></i> Exit Game
+        </button>
+
+        <div class="flex items-center space-x-3">
+          <span class="text-xs font-extrabold text-pink-600 bg-pink-100 px-3 py-1 rounded-full border border-pink-300">
+            Word <span id="fillCurrentIndex">1</span> of <span id="fillTotalWords">10</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-pink-300 shadow-pop space-y-8 text-center relative overflow-hidden">
+        
+        <div class="space-y-2">
+          <span class="text-xs font-bold uppercase tracking-widest text-pink-500">Phonics Puzzle</span>
+          <h3 class="text-3xl font-extrabold text-slate-800">Complete the Missing Letters!</h3>
+          <p id="fillSentenceContext" class="text-slate-600 text-base font-medium italic">"Listen to the word prompt..."</p>
+        </div>
+
+        <button onclick="speakFillCurrentWord()" class="w-16 h-16 bg-pink-500 hover:bg-pink-600 text-white text-2xl rounded-full mx-auto shadow-pop-sm flex items-center justify-center pulse-ring transition-transform active:scale-90">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <!-- Missing Letter Display Slots -->
+        <div id="fillLetterSlots" class="flex flex-wrap justify-center gap-2 sm:gap-3 my-6"></div>
+
+        <!-- Choice Bubbles -->
+        <div class="space-y-3 pt-4 border-t border-slate-100">
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Tap matching letter choices:</span>
+          <div id="fillLetterChoices" class="flex flex-wrap justify-center gap-2 sm:gap-3"></div>
+        </div>
+
+        <div id="fillFeedback" class="hidden p-3 rounded-2xl font-extrabold text-center text-sm"></div>
+      </div>
+    </section>
+
+    <!-- ================= SCHOOL SPELLING & DICTATION TEST VIEW ================= -->
+    <section id="view-test-mode" class="hidden space-y-6 max-w-3xl mx-auto">
+      
+      <div class="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border-2 border-emerald-300 shadow-sm">
+        <button onclick="switchView('dashboard')" class="text-slate-500 hover:text-slate-800 font-bold text-sm flex items-center">
+          <i class="fa-solid fa-xmark mr-1.5"></i> Leave Test
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+            School Spelling Test Mode 📝
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 rounded-3xl p-6 sm:p-10 border-4 border-emerald-400 shadow-pop space-y-8 relative overflow-hidden">
+        
+        <div class="border-b-2 border-emerald-300 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-emerald-900">Spelling & Sentence Dictation Test</h2>
+            <p class="text-xs text-emerald-700 font-semibold">Listen to the teacher, then type your answers on the paper below!</p>
+          </div>
+          <div class="bg-white/80 px-4 py-2 rounded-xl border border-emerald-200 text-emerald-800 text-sm font-extrabold">
+            Question <span id="testProgress">1</span> of <span id="testTotal">10</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border-2 border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div class="flex items-center space-x-3">
+            <button onclick="playTestAudio()" class="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-xl shadow-pop-sm transition-transform active:scale-90">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <div>
+              <p id="testPromptType" class="font-bold text-slate-800 text-base">Click to hear the prompt</p>
+              <p id="testAudioSubtitle" class="text-xs text-slate-500 font-medium">Plays word and example sentence</p>
+            </div>
+          </div>
+          <button onclick="playTestAudioSlow()" class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-2 rounded-xl flex items-center">
+            <i class="fa-solid fa-turtle mr-1.5 text-base"></i> Speak Slowly
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <label id="testInputLabel" class="block text-xs font-extrabold uppercase text-emerald-800 tracking-wider">Your Answer:</label>
+          <div class="paper-lines bg-amber-50/50 p-4 rounded-2xl border-2 border-slate-300">
+            <input type="text" id="testAnswerInput" placeholder="Type word or dictation sentence here..." autocomplete="off" autocorrect="off" class="w-full bg-transparent border-b-2 border-purple-500 font-extrabold text-2xl text-slate-800 focus:outline-none py-1">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button onclick="repeatTestSentence()" class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center">
+            <i class="fa-solid fa-rotate-right mr-1"></i> Repeat Prompt
+          </button>
+          
+          <button onclick="submitTestAnswer()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3.5 rounded-2xl shadow-pop-sm text-base flex items-center space-x-2 transition-transform active:scale-95">
+            <span>Next Question</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TEST RESULTS & REPORT CARD VIEW ================= -->
+    <section id="view-test-results" class="hidden space-y-6 max-w-2xl mx-auto">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 shadow-pop space-y-6 text-center relative overflow-hidden">
+        
+        <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-3xl flex items-center justify-center text-4xl mx-auto border-2 border-amber-300">
+          <i class="fa-solid fa-award"></i>
+        </div>
+
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Test Complete!</span>
+          <h2 class="text-3xl font-extrabold text-slate-800 mt-1">Official Spelling Report Card</h2>
+        </div>
+
+        <div id="resultsStars" class="flex justify-center space-x-2 text-3xl text-amber-400">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+
+        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 inline-block px-8">
+          <span class="text-xs font-extrabold text-amber-700 uppercase block">Final Score</span>
+          <span id="resultsScoreText" class="text-4xl font-extrabold text-amber-800">10 / 10</span>
+        </div>
+
+        <div class="text-left space-y-3 pt-4 border-t border-slate-100">
+          <h4 class="font-bold text-slate-700 text-sm">Review Questions:</h4>
+          <div id="resultsBreakdown" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+        </div>
+
+        <button onclick="switchView('dashboard')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-extrabold py-3.5 rounded-2xl shadow-pop-sm text-base transition-transform active:scale-95">
+          Back to Playground 🚀
+        </button>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white/60 border-t border-slate-200 py-4 text-center text-xs text-slate-500 font-semibold">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>SpellQuest - Fun Sight Words, High Frequency Words & Sentence Dictation</p>
+      <p class="flex items-center space-x-1">
+        <span>Made for young learners</span>
+        <i class="fa-solid fa-heart text-pink-500"></i>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Javascript Game Logic -->
+  <script>
+    const PRESET_GRADE_DATA = {
+      'k': {
+        name: 'Kindergarten Sight Words',
+        words: [
+          { word: 'the', category: 'Sight Word', sentence: 'The sun is bright.' },
+          { word: 'see', category: 'High Frequency', sentence: 'I see a cute puppy.' },
+          { word: 'like', category: 'Sight Word', sentence: 'I like ice cream.' },
+          { word: 'cat', category: 'Sight Word', sentence: 'The cat sleeps on the bed.' },
+          { word: 'dog', category: 'Sight Word', sentence: 'My dog likes to run.' },
+          { word: 'can', category: 'High Frequency', sentence: 'Can you jump high?' },
+          { word: 'go', category: 'Sight Word', sentence: 'We go to the park.' },
+          { word: 'play', category: 'High Frequency', sentence: 'Let us play together.' }
+        ],
+        sentences: [
+          'I see the cat.',
+          'We can play.',
+          'The dog is happy.'
+        ]
+      },
+      '1st': {
+        name: '1st Grade Core List',
+        words: [
+          { word: 'where', category: 'High Frequency', sentence: 'Where are my shoes?' },
+          { word: 'there', category: 'Sight Word', sentence: 'Put the book over there.' },
+          { word: 'friend', category: 'High Frequency', sentence: 'She is my best friend.' },
+          { word: 'happy', category: 'Sight Word', sentence: 'I feel very happy today.' },
+          { word: 'little', category: 'Sight Word', sentence: 'A little duck swam by.' },
+          { word: 'school', category: 'High Frequency', sentence: 'We learn at school.' },
+          { word: 'jump', category: 'Sight Word', sentence: 'Jump over the puddle.' },
+          { word: 'house', category: 'High Frequency', sentence: 'Their house is blue.' }
+        ],
+        sentences: [
+          'My friend went home.',
+          'Where is the happy little puppy?',
+          'We play at school.'
+        ]
+      },
+      '2nd': {
+        name: '2nd Grade Word Master',
+        words: [
+          { word: 'because', category: 'High Frequency', sentence: 'I smiled because I won.' },
+          { word: 'always', category: 'Sight Word', sentence: 'Always brush your teeth.' },
+          { word: 'around', category: 'Sight Word', sentence: 'We walked around the lake.' },
+          { word: 'brother', category: 'High Frequency', sentence: 'My brother plays soccer.' },
+          { word: 'sister', category: 'High Frequency', sentence: 'My sister loves to read.' },
+          { word: 'before', category: 'Sight Word', sentence: 'Wash your hands before eating.' },
+          { word: 'people', category: 'High Frequency', sentence: 'Many people visited the zoo.' },
+          { word: 'together', category: 'Sight Word', sentence: 'We sing songs together.' }
+        ],
+        sentences: [
+          'My brother and sister play together.',
+          'Always wash hands before eating.',
+          'Because it rained, we stayed inside.'
+        ]
+      },
+      '3rd': {
+        name: '3rd Grade High Frequency',
+        words: [
+          { word: 'thought', category: 'High Frequency', sentence: 'I thought the test was easy.' },
+          { word: 'through', category: 'Sight Word', sentence: 'We walked through the forest.' },
+          { word: 'different', category: 'High Frequency', sentence: 'Each star is different.' },
+          { word: 'together', category: 'Sight Word', sentence: 'Let us work together.' },
+          { word: 'beautiful', category: 'High Frequency', sentence: 'The rainbow was beautiful.' },
+          { word: 'sentence', category: 'High Frequency', sentence: 'Write a full sentence.' },
+          { word: 'between', category: 'Sight Word', sentence: 'Sit between your friends.' },
+          { word: 'important', category: 'High Frequency', sentence: 'Water is important for life.' }
+        ],
+        sentences: [
+          'I thought we walked through the garden.',
+          'Write an important sentence on the line.',
+          'Each beautiful bird is different.'
+        ]
+      },
+      '4th': {
+        name: '4th Grade Word Explorer',
+        words: [
+          { word: 'favorite', category: 'High Frequency', sentence: 'Pizza is my favorite meal.' },
+          { word: 'government', category: 'Vocabulary', sentence: 'The government makes laws.' },
+          { word: 'remember', category: 'Sight Word', sentence: 'Always remember your homework.' },
+          { word: 'experiment', category: 'Vocabulary', sentence: 'We tried a science experiment.' },
+          { word: 'believe', category: 'High Frequency', sentence: 'I believe you can do it.' },
+          { word: 'knowledge', category: 'Vocabulary', sentence: 'Reading builds knowledge.' },
+          { word: 'question', category: 'High Frequency', sentence: 'Raise your hand to ask a question.' },
+          { word: 'disappear', category: 'High Frequency', sentence: 'Watch the coin disappear.' }
+        ],
+        sentences: [
+          'Do you remember the answer to the question?',
+          'Reading builds great knowledge for school.',
+          'My favorite science experiment was fun.'
+        ]
+      },
+      'custom': {
+        name: 'My Custom List',
+        words: [],
+        sentences: []
+      }
+    };
+
+    let currentState = {
+      currentGrade: '1st',
+      starScore: 0,
+      activeWords: [],
+      activeSentences: [],
+      customWords: [],
+      customSentences: [],
+      ocrImageData: null
+    };
+
+    window.onload = function() {
+      const savedStars = localStorage.getItem('spellquest_stars');
+      if (savedStars) currentState.starScore = parseInt(savedStars) || 0;
+      updateStarUI();
+
+      changeGrade('1st');
+    };
+
+    function updateStarUI() {
+      document.getElementById('starCounter').innerText = currentState.starScore;
+      localStorage.setItem('spellquest_stars', currentState.starScore);
+    }
+
+    function addStars(count) {
+      currentState.starScore += count;
+      updateStarUI();
+      triggerConfetti();
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.7 }
+        });
+      }
+    }
+
+    /* Web Audio SFX Helper */
+    function playSFX(type) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'success') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.25);
+        }
+      } catch(e) {}
+    }
+
+    /* Speech Synthesis Helper */
+    function speakText(text, slow = false) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = slow ? 0.6 : 0.85;
+        utterance.pitch = 1.05;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    /* Navigation View Switcher */
+    function switchView(viewId) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      const views = ['dashboard', 'photo-upload', 'word-list', 'game-keepy-uppy', 'game-fill-blank', 'test-mode', 'test-results'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.remove('hidden');
+
+      if (viewId !== 'game-keepy-uppy') {
+        stopKeepyUppyGame();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* Grade Selection Handler */
+    function changeGrade(gradeKey) {
+      currentState.currentGrade = gradeKey;
+      document.getElementById('gradeSelect').value = gradeKey;
+
+      document.querySelectorAll('.grade-btn').forEach(btn => {
+        if (btn.dataset.grade === gradeKey) {
+          btn.className = "grade-btn bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-sm border border-purple-700 shadow-sm";
+        } else {
+          btn.className = "grade-btn bg-slate-100 hover:bg-purple-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-sm border border-slate-200 transition-colors";
+        }
+      });
+
+      if (gradeKey === 'custom') {
+        currentState.activeWords = [...currentState.customWords];
+        currentState.activeSentences = [...currentState.customSentences];
+      } else {
+        const data = PRESET_GRADE_DATA[gradeKey];
+        currentState.activeWords = [...data.words];
+        currentState.activeSentences = [...data.sentences];
+      }
+
+      renderDashboardPreview();
+      renderManageLists();
+    }
+
+    /* Render Preview Chips on Dashboard */
+    function renderDashboardPreview() {
+      const gradeTitle = gradeKeyToName(currentState.currentGrade);
+      document.getElementById('activeGradeTitle').innerText = gradeTitle;
+
+      const chipsContainer = document.getElementById('dashboardWordChips');
+      chipsContainer.innerHTML = '';
+
+      if (currentState.activeWords.length === 0) {
+        chipsContainer.innerHTML = `<span class="text-xs text-slate-400 italic">No words added yet! Scan a worksheet or add words manually.</span>`;
+      } else {
+        currentState.activeWords.forEach(item => {
+          const chip = document.createElement('div');
+          chip.className = 'bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3 py-1.5 rounded-xl font-extrabold text-purple-800 text-sm flex items-center space-x-2 cursor-pointer transition-transform hover:scale-105';
+          chip.onclick = () => speakText(item.word);
+          chip.innerHTML = `<span>${item.word}</span> <i class="fa-solid fa-volume-low text-xs text-purple-400"></i>`;
+          chipsContainer.appendChild(chip);
+        });
+      }
+
+      const sentencesContainer = document.getElementById('dashboardSentencePreview');
+      sentencesContainer.innerHTML = '';
+      if (currentState.activeSentences.length === 0) {
+        sentencesContainer.innerHTML = `<li class="text-xs text-slate-400 italic">No dictation sentences found.</li>`;
+      } else {
+        currentState.activeSentences.forEach((sentence) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center space-x-2 cursor-pointer hover:text-purple-700';
+          li.onclick = () => speakText(sentence);
+          li.innerHTML = `<i class="fa-solid fa-quote-left text-xs text-purple-400"></i><span>"${sentence}"</span>`;
+          sentencesContainer.appendChild(li);
+        });
+      }
+    }
+
+    function gradeKeyToName(key) {
+      if (key === 'custom') return 'My Custom List ⭐';
+      return PRESET_GRADE_DATA[key] ? PRESET_GRADE_DATA[key].name : key;
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentState.ocrImageData = e.target.result;
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('uploadPrompt').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('extractBtn').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function processPhotoWithGemini() {
+      if (!currentState.ocrImageData) return;
+
+      const extractBtn = document.getElementById('extractBtn');
+      const ocrLoading = document.getElementById('ocrLoading');
+
+      extractBtn.disabled = true;
+      ocrLoading.classList.remove('hidden');
+
+      try {
+        const base64Clean = currentState.ocrImageData.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
+        const customApiKey = document.getElementById('geminiApiKeyInput').value.trim();
+        const apiKey = customApiKey || "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const prompt = `Read this spelling worksheet image carefully. Extract all spelling words, high-frequency words, and complete dictation sentences. Return ONLY a valid JSON object matching this schema:
+{
+  "words": [
+    { "word": "example", "category": "High Frequency", "sentence": "This is an example." }
+  ],
+  "sentences": [
+    "First dictation sentence here."
+  ]
+}`;
+
+        const payload = {
+          contents: [{
+            role: "user",
+            parts: [
+              { text: prompt },
+              { inlineData: { mimeType: "image/png", data: base64Clean } }
+            ]
+          }],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        
+        if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+          const jsonText = result.candidates[0].content.parts[0].text;
+          const parsed = JSON.parse(jsonText);
+
+          if (parsed.words) currentState.customWords = parsed.words;
+          if (parsed.sentences) currentState.customSentences = parsed.sentences;
+
+          changeGrade('custom');
+          switchView('dashboard');
+          alert(`Successfully extracted ${parsed.words?.length || 0} words and ${parsed.sentences?.length || 0} dictation sentences!`);
+        } else {
+          alert('Could not read spelling words from image. Adding fallback words.');
+          currentState.customWords = [
+            { word: 'school', category: 'Custom', sentence: 'We go to school.' },
+            { word: 'friend', category: 'Custom', sentence: 'She is my friend.' }
+          ];
+          currentState.customSentences = ['My friend plays at school.'];
+          changeGrade('custom');
+          switchView('dashboard');
+        }
+
+      } catch (err) {
+        console.error('OCR Error:', err);
+        currentState.customWords = [
+          { word: 'star', category: 'High Frequency', sentence: 'Look at the bright star.' },
+          { word: 'light', category: 'Sight Word', sentence: 'Turn on the light.' }
+        ];
+        currentState.customSentences = ['The star shines at night.'];
+        changeGrade('custom');
+        switchView('dashboard');
+      } finally {
+        extractBtn.disabled = false;
+        ocrLoading.classList.add('hidden');
+      }
+    }
+
+    /* Word Bank Manager Functions */
+    function renderManageLists() {
+      document.getElementById('manageWordCount').innerText = currentState.activeWords.length;
+      document.getElementById('manageSentenceCount').innerText = currentState.activeSentences.length;
+
+      const wordsContainer = document.getElementById('manageWordsContainer');
+      wordsContainer.innerHTML = '';
+
+      currentState.activeWords.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-50 border border-slate-200 p-3 rounded-2xl flex items-center justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="font-extrabold text-slate-800 text-base">${item.word}</div>
+            <div class="text-xs text-slate-500 italic">"${item.sentence || ''}"</div>
+          </div>
+          <button onclick="removeWord(${index})" class="text-slate-400 hover:text-red-500 p-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+        wordsContainer.appendChild(card);
+      });
+
+      const sentencesContainer = document.getElementById('manageSentencesContainer');
+      sentencesContainer.innerHTML = '';
+
+      currentState.activeSentences.forEach((sentence, index) => {
+        const li = document.createElement('li');
+        li.className = 'bg-slate-50 border border-slate-200 p-3 rounded-2xl flex items-center justify-between text-sm font-medium';
+        li.innerHTML = `
+          <span>"${sentence}"</span>
+          <button onclick="removeSentence(${index})" class="text-slate-400 hover:text-red-500 p-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+        sentencesContainer.appendChild(li);
+      });
+    }
+
+    function addCustomWord() {
+      const wordInput = document.getElementById('newWordInput');
+      const sentenceInput = document.getElementById('newSentenceInput');
+
+      const word = wordInput.value.trim().toLowerCase();
+      if (!word) return;
+
+      const newItem = {
+        word: word,
+        category: 'Custom Word',
+        sentence: sentenceInput.value.trim() || `The word is ${word}.`
+      };
+
+      currentState.activeWords.push(newItem);
+      if (currentState.currentGrade === 'custom') {
+        currentState.customWords.push(newItem);
+      }
+
+      wordInput.value = '';
+      sentenceInput.value = '';
+      renderManageLists();
+      renderDashboardPreview();
+    }
+
+    function addCustomDictationSentence() {
+      const dictationInput = document.getElementById('newDictationInput');
+      const sentence = dictationInput.value.trim();
+      if (!sentence) return;
+
+      currentState.activeSentences.push(sentence);
+      if (currentState.currentGrade === 'custom') {
+        currentState.customSentences.push(sentence);
+      }
+
+      dictationInput.value = '';
+      renderManageLists();
+      renderDashboardPreview();
+    }
+
+    function removeWord(index) {
+      currentState.activeWords.splice(index, 1);
+      renderManageLists();
+      renderDashboardPreview();
+    }
+
+    function removeSentence(index) {
+      currentState.activeSentences.splice(index, 1);
+      renderManageLists();
+      renderDashboardPreview();
+    }
+
+    function resetCurrentListToDefault() {
+      changeGrade(currentState.currentGrade);
+    }
+
+    let keepyGame = {
+      active: false,
+      animationFrame: null,
+      score: 0,
+      streak: 0,
+      lives: 3,
+      balloons: [],
+      spawnTimer: 0
+    };
+
+    function startKeepyUppyGame() {
+      if (currentState.activeWords.length === 0) {
+        alert("Please select a grade list with words first!");
+        return;
+      }
+
+      switchView('game-keepy-uppy');
+      document.getElementById('keepyOverlay').classList.remove('hidden');
+      document.getElementById('keepyOverlayTitle').innerText = "Keepy-Uppy Sky Drop";
+    }
+
+    function startKeepyUppyGameLoop() {
+      document.getElementById('keepyOverlay').classList.add('hidden');
+      
+      keepyGame.active = true;
+      keepyGame.score = 0;
+      keepyGame.streak = 0;
+      keepyGame.lives = 3;
+      keepyGame.balloons = [];
+      keepyGame.spawnTimer = 0;
+
+      updateKeepyUI();
+
+      const canvas = document.getElementById('keepyCanvas');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const input = document.getElementById('keepyInput');
+      input.value = '';
+      input.focus();
+      input.oninput = handleKeepyTyping;
+
+      if (keepyGame.animationFrame) cancelAnimationFrame(keepyGame.animationFrame);
+      keepyGameLoop();
+    }
+
+    function stopKeepyUppyGame() {
+      keepyGame.active = false;
+      if (keepyGame.animationFrame) cancelAnimationFrame(keepyGame.animationFrame);
+    }
+
+    function exitKeepyUppyGame() {
+      stopKeepyUppyGame();
+      switchView('dashboard');
+    }
+
+    function keepyGameLoop() {
+      if (!keepyGame.active) return;
+
+      const canvas = document.getElementById('keepyCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      keepyGame.spawnTimer++;
+      if (keepyGame.spawnTimer > 120 && keepyGame.balloons.length < 4) {
+        spawnBalloon(canvas.width);
+        keepyGame.spawnTimer = 0;
+      }
+
+      for (let i = keepyGame.balloons.length - 1; i >= 0; i--) {
+        const b = keepyGame.balloons[i];
+        b.y += b.speed;
+        b.wobble += 0.05;
+        b.x += Math.sin(b.wobble) * 0.8;
+
+        ctx.save();
+        ctx.translate(b.x, b.y);
+
+        ctx.beginPath();
+        ctx.moveTo(0, 30);
+        ctx.lineTo(0, 50);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 40, 48, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.beginPath();
+        ctx.ellipse(-12, -15, 8, 14, -Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(-55, 25, 110, 30, 10);
+        ctx.fill();
+
+        ctx.font = 'bold 18px Fredoka, sans-serif';
+        ctx.fillStyle = '#1e293b';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.word, 0, 46);
+
+        ctx.restore();
+
+        if (b.y > canvas.height - 70) {
+          keepyGame.balloons.splice(i, 1);
+          keepyGame.lives--;
+          keepyGame.streak = 0;
+          playSFX('wrong');
+          updateKeepyUI();
+
+          if (keepyGame.lives <= 0) {
+            triggerKeepyGameOver();
+            return;
+          }
+        }
+      }
+
+      keepyGame.animationFrame = requestAnimationFrame(keepyGameLoop);
+    }
+
+    function spawnBalloon(canvasWidth) {
+      const colors = ['#f472b6', '#a855f7', '#38bdf8', '#4ade80', '#facc15'];
+      const randomWordObj = currentState.activeWords[Math.floor(Math.random() * currentState.activeWords.length)];
+      if (!randomWordObj) return;
+
+      keepyGame.balloons.push({
+        word: randomWordObj.word,
+        x: Math.random() * (canvasWidth - 120) + 60,
+        y: -50,
+        speed: 0.6 + Math.random() * 0.4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        wobble: Math.random() * Math.PI
+      });
+    }
+
+    function handleKeepyTyping(e) {
+      const val = e.target.value.trim().toLowerCase();
+      const matchIndex = keepyGame.balloons.findIndex(b => b.word.toLowerCase() === val);
+      
+      if (matchIndex !== -1) {
+        const popped = keepyGame.balloons.splice(matchIndex, 1)[0];
+        speakText(popped.word);
+        playSFX('success');
+        
+        keepyGame.score += 10 + (keepyGame.streak * 2);
+        keepyGame.streak++;
+        addStars(1);
+        updateKeepyUI();
+
+        e.target.value = '';
+      }
+    }
+
+    function speakTargetKeepyWord() {
+      if (keepyGame.balloons.length > 0) {
+        speakText(keepyGame.balloons[0].word);
+      }
+    }
+
+    function updateKeepyUI() {
+      document.getElementById('keepyScore').innerText = keepyGame.score;
+      document.getElementById('keepyStreak').innerText = `${keepyGame.streak}🔥`;
+
+      const livesDiv = document.getElementById('keepyLives');
+      livesDiv.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        if (i < keepyGame.lives) {
+          livesDiv.innerHTML += `<i class="fa-solid fa-heart"></i>`;
+        } else {
+          livesDiv.innerHTML += `<i class="fa-regular fa-heart text-slate-300"></i>`;
+        }
+      }
+    }
+
+    function triggerKeepyGameOver() {
+      keepyGame.active = false;
+      document.getElementById('keepyOverlay').classList.remove('hidden');
+      document.getElementById('keepyOverlayTitle').innerText = "Game Over!";
+      document.getElementById('keepyOverlayText').innerText = `Awesome try! You scored ${keepyGame.score} points and earned bonus stars!`;
+    }
+
+    let fillGame = {
+      currentIndex: 0,
+      currentWordObj: null,
+      missingIndices: [],
+      userLetters: {}
+    };
+
+    function startFillBlankGame() {
+      if (currentState.activeWords.length === 0) {
+        alert("Please select a word list first!");
+        return;
+      }
+
+      switchView('game-fill-blank');
+      fillGame.currentIndex = 0;
+      
+      window.removeEventListener('keydown', handleFillKeydown);
+      window.addEventListener('keydown', handleFillKeydown);
+
+      loadFillWordQuestion();
+    }
+
+    function handleFillKeydown(e) {
+      const fillBlankView = document.getElementById('view-game-fill-blank');
+      if (!fillBlankView || fillBlankView.classList.contains('hidden')) return;
+
+      if (e.key === 'Backspace') {
+        const filledSlots = fillGame.missingIndices.filter(idx => fillGame.userLetters[idx]);
+        if (filledSlots.length > 0) {
+          const lastFilled = filledSlots[filledSlots.length - 1];
+          clearFillSlot(lastFilled);
+        }
+      } else if (/^[a-zA-Z]$/.test(e.key)) {
+        selectFillChoice(e.key.toLowerCase());
+      }
+    }
+
+    function loadFillWordQuestion() {
+      if (fillGame.currentIndex >= currentState.activeWords.length) {
+        fillGame.currentIndex = 0;
+      }
+
+      const wordObj = currentState.activeWords[fillGame.currentIndex];
+      fillGame.currentWordObj = wordObj;
+      fillGame.userLetters = {};
+
+      document.getElementById('fillCurrentIndex').innerText = fillGame.currentIndex + 1;
+      document.getElementById('fillTotalWords').innerText = currentState.activeWords.length;
+      document.getElementById('fillSentenceContext').innerText = `"${wordObj.sentence || 'Listen to the word prompt.'}"`;
+
+      const word = wordObj.word.toLowerCase();
+      const numMissing = word.length > 4 ? 2 : 1;
+      fillGame.missingIndices = [];
+
+      while (fillGame.missingIndices.length < numMissing) {
+        const randIdx = Math.floor(Math.random() * word.length);
+        if (!fillGame.missingIndices.includes(randIdx)) {
+          fillGame.missingIndices.push(randIdx);
+        }
+      }
+
+      // CRITICAL: Sort left to right
+      fillGame.missingIndices.sort((a, b) => a - b);
+
+      renderFillLetterSlots();
+      renderFillChoices();
+      document.getElementById('fillFeedback').classList.add('hidden');
+      
+      speakText(wordObj.word);
+    }
+
+    function speakFillCurrentWord() {
+      if (fillGame.currentWordObj) {
+        speakText(fillGame.currentWordObj.word);
+      }
+    }
+
+    function renderFillLetterSlots() {
+      const slotsContainer = document.getElementById('fillLetterSlots');
+      slotsContainer.innerHTML = '';
+
+      const word = fillGame.currentWordObj.word;
+
+      for (let i = 0; i < word.length; i++) {
+        const char = word[i];
+        const isMissing = fillGame.missingIndices.includes(i);
+
+        const tile = document.createElement('div');
+        tile.className = 'w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center font-extrabold text-2xl border-3 transition-all shadow-pop-sm';
+
+        if (isMissing) {
+          const filled = fillGame.userLetters[i];
+          if (filled) {
+            tile.className += ' bg-purple-100 border-purple-500 text-purple-800 cursor-pointer hover:bg-purple-200';
+            tile.innerText = filled;
+            tile.title = "Click to clear this letter";
+            tile.onclick = () => clearFillSlot(i);
+          } else {
+            tile.className += ' bg-slate-100 border-dashed border-pink-400 text-transparent animate-pulse';
+            tile.innerText = '?';
+          }
+        } else {
+          tile.className += ' bg-white border-slate-300 text-slate-800';
+          tile.innerText = char.toUpperCase();
+        }
+
+        slotsContainer.appendChild(tile);
+      }
+    }
+
+    function clearFillSlot(index) {
+      if (fillGame.userLetters[index]) {
+        delete fillGame.userLetters[index];
+        renderFillLetterSlots();
+        document.getElementById('fillFeedback').classList.add('hidden');
+      }
+    }
+
+    function renderFillChoices() {
+      const choicesContainer = document.getElementById('fillLetterChoices');
+      choicesContainer.innerHTML = '';
+
+      const targetWord = fillGame.currentWordObj.word;
+      const neededChars = fillGame.missingIndices.map(idx => targetWord[idx].toUpperCase());
+
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const choicesSet = new Set(neededChars);
+      while (choicesSet.size < 6) {
+        const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+        choicesSet.add(randomChar);
+      }
+
+      const choicesArray = Array.from(choicesSet).sort(() => Math.random() - 0.5);
+
+      choicesArray.forEach(char => {
+        const btn = document.createElement('button');
+        btn.className = 'w-12 h-12 bg-pink-100 hover:bg-pink-200 text-pink-800 font-extrabold text-xl rounded-2xl border-2 border-pink-300 shadow-pop-sm transition-transform active:scale-90';
+        btn.innerText = char;
+        btn.onclick = () => selectFillChoice(char.toLowerCase());
+        choicesContainer.appendChild(btn);
+      });
+    }
+
+    function selectFillChoice(letter) {
+      const nextEmptySlot = fillGame.missingIndices.find(idx => !fillGame.userLetters[idx]);
+      if (nextEmptySlot !== undefined) {
+        fillGame.userLetters[nextEmptySlot] = letter.toUpperCase();
+        renderFillLetterSlots();
+        checkFillSolution();
+      }
+    }
+
+    function checkFillSolution() {
+      const allFilled = fillGame.missingIndices.every(idx => fillGame.userLetters[idx]);
+      if (!allFilled) return;
+
+      const targetWord = fillGame.currentWordObj.word.toLowerCase();
+      let userWord = targetWord.split('');
+      fillGame.missingIndices.forEach(idx => {
+        userWord[idx] = fillGame.userLetters[idx].toLowerCase();
+      });
+
+      const isCorrect = userWord.join('') === targetWord;
+      const feedbackEl = document.getElementById('fillFeedback');
+      feedbackEl.classList.remove('hidden');
+
+      if (isCorrect) {
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-emerald-100 text-emerald-800 border-2 border-emerald-300';
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> Great Job! That is correct! ⭐`;
+        addStars(1);
+        playSFX('success');
+        setTimeout(() => {
+          fillGame.currentIndex++;
+          loadFillWordQuestion();
+        }, 1200);
+      } else {
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-red-100 text-red-800 border-2 border-red-300';
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> Try again! Click a filled letter to fix it.`;
+        playSFX('wrong');
+      }
+    }
+
+    let testMode = {
+      questions: [],
+      currentIndex: 0,
+      answers: []
+    };
+
+    function startSpellingTest() {
+      if (currentState.activeWords.length === 0 && currentState.activeSentences.length === 0) {
+        alert("Please add or select a grade word list first!");
+        return;
+      }
+
+      // Build test queue: spell all target words first, followed by exactly 1 dictation sentence at the end
+      testMode.questions = [];
+
+      // 1. Add all active spelling words
+      currentState.activeWords.forEach(w => {
+        testMode.questions.push({ type: 'word', target: w.word, context: w.sentence });
+      });
+
+      // 2. Add exactly 1 dictation sentence at the end if available
+      if (currentState.activeSentences.length > 0) {
+        const selectedSentence = currentState.activeSentences[Math.floor(Math.random() * currentState.activeSentences.length)];
+        testMode.questions.push({ type: 'sentence', target: selectedSentence, context: 'Dictation Sentence' });
+      }
+
+      testMode.currentIndex = 0;
+      testMode.answers = [];
+
+      switchView('test-mode');
+      loadTestQuestion();
+    }
+
+    function loadTestQuestion() {
+      if (testMode.currentIndex >= testMode.questions.length) {
+        showTestResults();
+        return;
+      }
+
+      const q = testMode.questions[testMode.currentIndex];
+      document.getElementById('testProgress').innerText = testMode.currentIndex + 1;
+      document.getElementById('testTotal').innerText = testMode.questions.length;
+
+      const input = document.getElementById('testAnswerInput');
+      input.value = '';
+      input.focus();
+
+      if (q.type === 'word') {
+        document.getElementById('testPromptType').innerText = `Spelling Word #${testMode.currentIndex + 1}`;
+        document.getElementById('testAudioSubtitle').innerText = `Listen to the word and sentence context.`;
+        document.getElementById('testInputLabel').innerText = `Type the spelling word:`;
+      } else {
+        document.getElementById('testPromptType').innerText = `Dictation Sentence #${testMode.currentIndex + 1}`;
+        document.getElementById('testAudioSubtitle').innerText = `Listen carefully to the full sentence.`;
+        document.getElementById('testInputLabel').innerText = `Type the full dictation sentence:`;
+      }
+
+      playTestAudio();
+    }
+
+    function playTestAudio() {
+      const q = testMode.questions[testMode.currentIndex];
+      if (!q) return;
+
+      if (q.type === 'word') {
+        speakText(`${q.target}. ${q.context || ''}`);
+      } else {
+        speakText(q.target);
+      }
+    }
+
+    function playTestAudioSlow() {
+      const q = testMode.questions[testMode.currentIndex];
+      if (!q) return;
+
+      if (q.type === 'word') {
+        speakText(`${q.target}`, true);
+      } else {
+        speakText(q.target, true);
+      }
+    }
+
+    function repeatTestSentence() {
+      playTestAudio();
+    }
+
+    function submitTestAnswer() {
+      const input = document.getElementById('testAnswerInput');
+      const userAns = input.value.trim();
+      const q = testMode.questions[testMode.currentIndex];
+
+      let isCorrect = false;
+      if (q.type === 'word') {
+        isCorrect = userAns.toLowerCase() === q.target.toLowerCase();
+      } else {
+        const cleanUser = userAns.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+        const cleanTarget = q.target.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+        isCorrect = cleanUser === cleanTarget;
+      }
+
+      testMode.answers.push({
+        question: q,
+        userAns: userAns,
+        isCorrect: isCorrect
+      });
+
+      if (isCorrect) playSFX('success');
+      else playSFX('wrong');
+
+      testMode.currentIndex++;
+      loadTestQuestion();
+    }
+
+    function showTestResults() {
+      switchView('test-results');
+
+      let correctCount = testMode.answers.filter(a => a.isCorrect).length;
+      let total = testMode.answers.length;
+
+      document.getElementById('resultsScoreText').innerText = `${correctCount} / ${total}`;
+
+      const starsDiv = document.getElementById('resultsStars');
+      starsDiv.innerHTML = '';
+      const percent = total > 0 ? (correctCount / total) : 0;
+      const numStars = percent >= 0.8 ? 3 : (percent >= 0.5 ? 2 : 1);
+
+      for (let i = 0; i < 3; i++) {
+        if (i < numStars) {
+          starsDiv.innerHTML += `<i class="fa-solid fa-star"></i>`;
+        } else {
+          starsDiv.innerHTML += `<i class="fa-regular fa-star text-slate-300"></i>`;
+        }
+      }
+
+      addStars(correctCount * 2);
+
+      const breakdown = document.getElementById('resultsBreakdown');
+      breakdown.innerHTML = '';
+
+      testMode.answers.forEach((ans, idx) => {
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-2xl border ${ans.isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'} text-xs font-semibold flex items-center justify-between`;
+        
+        div.innerHTML = `
+          <div>
+            <span class="font-bold text-slate-800">${idx + 1}. Target: "${ans.question.target}"</span>
+            <div class="${ans.isCorrect ? 'text-emerald-700' : 'text-red-600'} mt-0.5">Your answer: "${ans.userAns || 'blank'}"</div>
+          </div>
+          <i class="fa-solid ${ans.isCorrect ? 'fa-circle-check text-emerald-500 text-lg' : 'fa-circle-xmark text-red-500 text-lg'}"></i>
+        `;
+
+        breakdown.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
