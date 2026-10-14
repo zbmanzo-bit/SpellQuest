@@ -8,12 +8,12 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Fredoka & Nunito for kid-friendly aesthetics -->
+  <!-- Google Fonts: Fredoka & Nunito -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Canvas Confetti for rewards -->
+  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <!-- FontAwesome Icons -->
@@ -52,7 +52,6 @@
       background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #faf5ff 100%);
     }
 
-    /* Floating balloon bounce animation */
     @keyframes floatUp {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-10px) rotate(2deg); }
@@ -61,7 +60,6 @@
       animation: floatUp 3s ease-in-out infinite;
     }
 
-    /* Pulse effect for audio button */
     @keyframes pulseRing {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7); }
       70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
@@ -71,7 +69,6 @@
       animation: pulseRing 2s infinite;
     }
 
-    /* Dictation paper background styling */
     .paper-lines {
       background: repeating-linear-gradient(
         transparent,
@@ -82,7 +79,6 @@
       line-height: 32px;
     }
 
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 10px;
     }
@@ -101,7 +97,6 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-purple-300">
 
-  <!-- Navigation Header -->
   <header class="bg-white/80 backdrop-blur-md border-b-4 border-slate-200 sticky top-0 z-40 px-4 py-3 shadow-sm">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       
@@ -118,7 +113,6 @@
 
       <!-- Stats Bar & Navigation -->
       <div class="flex items-center space-x-3">
-        <!-- Grade Selector Badge -->
         <div class="hidden sm:flex items-center bg-purple-100 border-2 border-purple-300 rounded-xl px-3 py-1">
           <i class="fa-solid fa-graduation-cap text-purple-600 mr-2"></i>
           <select id="gradeSelect" onchange="changeGrade(this.value)" class="bg-transparent font-bold text-purple-800 text-sm focus:outline-none cursor-pointer">
@@ -131,13 +125,11 @@
           </select>
         </div>
 
-        <!-- Star Points -->
         <div class="flex items-center bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-xl shadow-sm">
           <i class="fa-solid fa-star text-amber-500 text-lg mr-1.5 animate-bounce"></i>
           <span id="starCounter" class="font-extrabold text-amber-800 text-lg">0</span>
         </div>
 
-        <!-- Home Button -->
         <button onclick="switchView('dashboard')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl border-2 border-slate-300 active:translate-y-0.5 transition-all" title="Home Playground">
           <i class="fa-solid fa-house text-lg"></i>
         </button>
@@ -148,7 +140,6 @@
   <!-- Main Dynamic View Container -->
   <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
     
-    <!-- ================= DASHBOARD VIEW ================= -->
     <section id="view-dashboard" class="space-y-8">
       
       <!-- Hero Banner -->
@@ -172,7 +163,6 @@
           </div>
         </div>
 
-        <!-- Mascot Illustration Container -->
         <div class="mt-6 md:mt-0 z-10 flex-shrink-0 relative">
           <div class="w-40 h-40 sm:w-48 sm:h-48 bg-white/20 rounded-full flex items-center justify-center animate-float border-4 border-white/30 shadow-inner">
             <i class="fa-solid fa-owl text-7xl text-yellow-300 drop-shadow-md"></i>
@@ -195,8 +185,7 @@
         </div>
       </div>
 
-      <!-- Action Games & Test Modes Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         <!-- Game 1: Keepy Uppy Sky Drop -->
         <div onclick="startKeepyUppyGame()" class="bg-white rounded-3xl p-6 border-4 border-sky-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
@@ -211,12 +200,48 @@
             </div>
           </div>
           <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
-            <span class="text-xs font-extrabold text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">Fast Typing Fun</span>
-            <span class="bg-sky-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-sky-600 transition-colors">Play Now <i class="fa-solid fa-play ml-1"></i></span>
+            <span class="text-xs font-extrabold text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">Slow & Fun</span>
+            <span class="bg-sky-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-sky-600 transition-colors">Play <i class="fa-solid fa-play ml-1"></i></span>
           </div>
         </div>
 
-        <!-- Game 2: Fill in the Blank / Letter Pop -->
+        <!-- Game 2: Snowman Word Quest (Hangman) -->
+        <div onclick="startSnowmanGame()" class="bg-white rounded-3xl p-6 border-4 border-cyan-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 z-10">
+            <div class="w-14 h-14 bg-cyan-100 border-2 border-cyan-300 text-cyan-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-snowman"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide text-cyan-600">Kid Hangman Game</span>
+              <h3 class="text-2xl font-bold text-slate-800">Snowman Builder</h3>
+              <p class="text-slate-600 text-sm mt-1">Guess letters to reveal the secret word and build Frosty!</p>
+            </div>
+          </div>
+          <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
+            <span class="text-xs font-extrabold text-cyan-700 bg-cyan-50 px-3 py-1 rounded-full border border-cyan-200">Letter Guessing</span>
+            <span class="bg-cyan-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-cyan-600 transition-colors">Play <i class="fa-solid fa-play ml-1"></i></span>
+          </div>
+        </div>
+
+        <!-- Game 3: Box POP: Correct Spelling Hunt -->
+        <div onclick="startBoxPopGame()" class="bg-white rounded-3xl p-6 border-4 border-amber-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 z-10">
+            <div class="w-14 h-14 bg-amber-100 border-2 border-amber-300 text-amber-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide text-amber-500">Multiple Choice</span>
+              <h3 class="text-2xl font-bold text-slate-800">Box POP Hunt</h3>
+              <p class="text-slate-600 text-sm mt-1">Find and tap the box with the correct spelling to win points!</p>
+            </div>
+          </div>
+          <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
+            <span class="text-xs font-extrabold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">Spelling Detective</span>
+            <span class="bg-amber-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-amber-600 transition-colors">Play <i class="fa-solid fa-play ml-1"></i></span>
+          </div>
+        </div>
+
+        <!-- Game 4: Fill in the Blank / Letter Pop -->
         <div onclick="startFillBlankGame()" class="bg-white rounded-3xl p-6 border-4 border-pink-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
           <div class="space-y-4 z-10">
             <div class="w-14 h-14 bg-pink-100 border-2 border-pink-300 text-pink-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
@@ -230,11 +255,11 @@
           </div>
           <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
             <span class="text-xs font-extrabold text-pink-600 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">Phonics Practice</span>
-            <span class="bg-pink-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-pink-600 transition-colors">Play Now <i class="fa-solid fa-play ml-1"></i></span>
+            <span class="bg-pink-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-pink-600 transition-colors">Play <i class="fa-solid fa-play ml-1"></i></span>
           </div>
         </div>
 
-        <!-- Mode 3: School Spelling Test & Dictation -->
+        <!-- Mode 5: School Spelling Test & Dictation -->
         <div onclick="startSpellingTest()" class="bg-white rounded-3xl p-6 border-4 border-emerald-300 shadow-pop hover:shadow-pop-lg transition-all transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
           <div class="space-y-4 z-10">
             <div class="w-14 h-14 bg-emerald-100 border-2 border-emerald-300 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
@@ -242,13 +267,13 @@
             </div>
             <div>
               <span class="text-xs font-bold uppercase tracking-wide text-emerald-600">School Test Practice</span>
-              <h3 class="text-2xl font-bold text-slate-800">Spelling & Dictation Test</h3>
+              <h3 class="text-2xl font-bold text-slate-800">Spelling & Dictation</h3>
               <p class="text-slate-600 text-sm mt-1">Replicates real classroom tests with words and full dictation sentences!</p>
             </div>
           </div>
           <div class="pt-6 flex items-center justify-between border-t border-slate-100 mt-4 z-10">
             <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Full Practice</span>
-            <span class="bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-emerald-600 transition-colors">Start Test <i class="fa-solid fa-circle-check ml-1"></i></span>
+            <span class="bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded-xl group-hover:bg-emerald-600 transition-colors">Start <i class="fa-solid fa-circle-check ml-1"></i></span>
           </div>
         </div>
 
@@ -276,7 +301,6 @@
 
     </section>
 
-    <!-- ================= PHOTO UPLOAD / OCR SCANNER VIEW ================= -->
     <section id="view-photo-upload" class="hidden space-y-6 max-w-3xl mx-auto">
       <div class="flex items-center justify-between">
         <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
@@ -310,8 +334,8 @@
         </div>
 
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
-          <label class="block text-xs font-bold text-slate-600 uppercase">Gemini API Key (Optional Override):</label>
-          <input type="password" id="geminiApiKeyInput" placeholder="Uses runtime key by default..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+          <label class="block text-xs font-bold text-slate-600 uppercase">Gemini API Key (Required for scanning):</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="Enter your Gemini API key here..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
         </div>
 
         <button id="extractBtn" onclick="processPhotoWithGemini()" disabled class="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white font-extrabold py-3.5 rounded-2xl shadow-pop-sm flex items-center justify-center space-x-2 transition-all">
@@ -326,7 +350,6 @@
       </div>
     </section>
 
-    <!-- ================= WORD BANK & MANUAL LIST MANAGER VIEW ================= -->
     <section id="view-word-list" class="hidden space-y-6">
       <div class="flex items-center justify-between">
         <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
@@ -348,7 +371,6 @@
           </button>
         </div>
 
-        <!-- Add New Word Input Row -->
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
           <h4 class="font-bold text-slate-700 text-sm">Add New Word</h4>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -360,7 +382,6 @@
           </div>
         </div>
 
-        <!-- Add Dictation Sentence Input -->
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
           <h4 class="font-bold text-slate-700 text-sm">Add Dictation Sentence</h4>
           <div class="flex gap-3">
@@ -383,7 +404,6 @@
       </div>
     </section>
 
-    <!-- ================= GAME 1: KEEPY-UPPY SKY DROP ARCADE ================= -->
     <section id="view-game-keepy-uppy" class="hidden space-y-4">
       <div class="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border-2 border-sky-200 shadow-sm">
         <button onclick="exitKeepyUppyGame()" class="text-slate-500 hover:text-slate-800 font-bold text-sm flex items-center">
@@ -426,7 +446,7 @@
               <i class="fa-solid fa-balloon"></i>
             </div>
             <h3 id="keepyOverlayTitle" class="text-2xl font-extrabold text-slate-800">Keepy-Uppy Sky Drop</h3>
-            <p id="keepyOverlayText" class="text-slate-600 text-sm">Type words accurately before balloons drop to the ground. Get combo streaks for big star points!</p>
+            <p id="keepyOverlayText" class="text-slate-600 text-sm">Type words accurately before balloons drop to the ground. Calibrated specially for learning spellers!</p>
             <button onclick="startKeepyUppyGameLoop()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-3 rounded-2xl shadow-pop-sm transition-transform active:scale-95">
               Start Playing! 🚀
             </button>
@@ -435,7 +455,160 @@
       </div>
     </section>
 
-    <!-- ================= GAME 2: FILL IN THE BLANK / LETTER POP ================= -->
+    <section id="view-game-snowman" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
+          <i class="fa-solid fa-xmark mr-1.5"></i> Exit Game
+        </button>
+
+        <div class="flex items-center space-x-3">
+          <span class="text-xs font-extrabold text-cyan-800 bg-cyan-100 px-3 py-1 rounded-full border border-cyan-300">
+            Word <span id="snowmanCurrentIndex">1</span> of <span id="snowmanTotalWords">10</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-b from-sky-200 via-cyan-100 to-white rounded-3xl p-6 sm:p-8 border-4 border-cyan-300 shadow-pop space-y-6 text-center relative overflow-hidden">
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          
+          <!-- SVG Snowman Visual Canvas -->
+          <div class="md:col-span-5 bg-gradient-to-b from-sky-400 to-cyan-200 rounded-2xl p-4 border-2 border-cyan-300 shadow-inner flex justify-center items-center h-64 relative overflow-hidden">
+            <!-- Falling snowflakes decoration -->
+            <div class="absolute inset-0 opacity-40 pointer-events-none flex justify-around text-white text-xs">
+              <i class="fa-solid fa-snowflake animate-bounce" style="animation-duration: 3s;"></i>
+              <i class="fa-solid fa-snowflake animate-bounce" style="animation-duration: 4s;"></i>
+              <i class="fa-solid fa-snowflake animate-bounce" style="animation-duration: 2.5s;"></i>
+            </div>
+
+            <svg id="snowmanSVG" class="w-48 h-56 drop-shadow-md" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Snowy Ground -->
+              <ellipse cx="100" cy="225" rx="80" ry="12" fill="#ffffff" />
+              
+              <!-- Part 1: Bottom Snowball -->
+              <g id="sm-part-1" class="transition-all duration-500 opacity-0 transform scale-90 origin-bottom">
+                <circle cx="100" cy="180" r="38" fill="#ffffff" stroke="#cbd5e1" stroke-width="3" />
+                <circle cx="100" cy="180" r="38" fill="url(#snowGrad)" />
+              </g>
+
+              <!-- Part 2: Middle Snowball -->
+              <g id="sm-part-2" class="transition-all duration-500 opacity-0 transform scale-90 origin-bottom">
+                <circle cx="100" cy="120" r="28" fill="#ffffff" stroke="#cbd5e1" stroke-width="3" />
+                <!-- Buttons -->
+                <circle cx="100" cy="110" r="3" fill="#334155" />
+                <circle cx="100" cy="125" r="3" fill="#334155" />
+                <circle cx="100" cy="140" r="3" fill="#334155" />
+              </g>
+
+              <!-- Part 3: Head Snowball -->
+              <g id="sm-part-3" class="transition-all duration-500 opacity-0 transform scale-90 origin-bottom">
+                <circle cx="100" cy="72" r="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="3" />
+              </g>
+
+              <!-- Part 4: Eyes & Carrot Nose -->
+              <g id="sm-part-4" class="transition-all duration-500 opacity-0">
+                <!-- Eyes -->
+                <circle cx="93" cy="67" r="2.5" fill="#1e293b" />
+                <circle cx="107" cy="67" r="2.5" fill="#1e293b" />
+                <!-- Carrot Nose -->
+                <polygon points="100,72 120,75 100,77" fill="#f97316" />
+                <!-- Smile -->
+                <path d="M 92 80 Q 100 86 108 80" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" />
+              </g>
+
+              <!-- Part 5: Stick Arms -->
+              <g id="sm-part-5" class="transition-all duration-500 opacity-0">
+                <!-- Left arm -->
+                <path d="M 73 120 L 40 100 M 48 105 L 42 93" stroke="#78350f" stroke-width="4" stroke-linecap="round" />
+                <!-- Right arm -->
+                <path d="M 127 120 L 160 100 M 152 105 L 158 93" stroke="#78350f" stroke-width="4" stroke-linecap="round" />
+              </g>
+
+              <!-- Part 6: Top Hat & Scarf -->
+              <g id="sm-part-6" class="transition-all duration-500 opacity-0">
+                <!-- Scarf -->
+                <path d="M 85 88 Q 100 95 115 88" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+                <path d="M 106 90 L 112 115" stroke="#ef4444" stroke-width="7" stroke-linecap="round" />
+                <!-- Top Hat -->
+                <rect x="78" y="50" width="44" height="6" rx="2" fill="#1e293b" />
+                <rect x="85" y="26" width="30" height="25" rx="3" fill="#1e293b" />
+                <rect x="85" y="45" width="30" height="5" fill="#3b82f6" />
+              </g>
+
+              <!-- Gradient Defs -->
+              <defs>
+                <radialGradient id="snowGrad" cx="30%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#e2e8f0" />
+                </radialGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- Target Word & Audio Prompt -->
+          <div class="md:col-span-7 space-y-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-cyan-600">Snowman Word Quest</span>
+              <h3 class="text-2xl font-extrabold text-slate-800">Guess letters to save Frosty!</h3>
+              <p id="snowmanSentenceContext" class="text-slate-600 text-sm font-medium italic mt-1">"Listen to the word prompt..."</p>
+            </div>
+
+            <div class="flex justify-center items-center space-x-3">
+              <button onclick="speakSnowmanCurrentWord()" class="w-14 h-14 bg-cyan-500 hover:bg-cyan-600 text-white text-xl rounded-2xl shadow-pop-sm flex items-center justify-center pulse-ring transition-transform active:scale-90" title="Listen to word">
+                <i class="fa-solid fa-volume-high"></i>
+              </button>
+              <div class="text-xs font-bold text-slate-500 text-left">
+                <span>Wrong Guesses:</span>
+                <div class="text-cyan-700 font-extrabold text-lg"><span id="snowmanWrongCount">0</span> / 6</div>
+              </div>
+            </div>
+
+            <!-- Letter Word Display Slots -->
+            <div id="snowmanLetterSlots" class="flex flex-wrap justify-center gap-2 my-4"></div>
+          </div>
+
+        </div>
+
+        <!-- On-screen Alphabet Keyboard -->
+        <div class="pt-4 border-t border-slate-100">
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider block mb-3">Tap or type letters:</span>
+          <div id="snowmanKeyboard" class="flex flex-wrap justify-center gap-1.5 sm:gap-2 max-w-xl mx-auto"></div>
+        </div>
+
+        <div id="snowmanFeedback" class="hidden p-3 rounded-2xl font-extrabold text-center text-sm"></div>
+      </div>
+    </section>
+
+    <section id="view-game-box-pop" class="hidden space-y-6 max-w-2xl mx-auto">
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
+          <i class="fa-solid fa-xmark mr-1.5"></i> Exit Game
+        </button>
+
+        <div class="flex items-center space-x-3">
+          <span class="text-xs font-extrabold text-amber-700 bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
+            Word <span id="boxCurrentIndex">1</span> of <span id="boxTotalWords">10</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 shadow-pop space-y-6 text-center relative overflow-hidden">
+        <div class="space-y-2">
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-500">Spelling Detective</span>
+          <h3 class="text-3xl font-extrabold text-slate-800">Which box is spelled correctly?</h3>
+          <p id="boxSentenceContext" class="text-slate-600 text-base font-medium italic">"Listen to the word..."</p>
+        </div>
+
+        <button onclick="speakBoxCurrentWord()" class="w-16 h-16 bg-amber-500 hover:bg-amber-600 text-white text-2xl rounded-full mx-auto shadow-pop-sm flex items-center justify-center pulse-ring transition-transform active:scale-90">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <div id="boxOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6"></div>
+
+        <div id="boxFeedback" class="hidden p-3 rounded-2xl font-extrabold text-center text-sm"></div>
+      </div>
+    </section>
+
     <section id="view-game-fill-blank" class="hidden space-y-6 max-w-2xl mx-auto">
       <div class="flex items-center justify-between">
         <button onclick="switchView('dashboard')" class="text-slate-600 hover:text-slate-900 font-bold flex items-center">
@@ -450,7 +623,6 @@
       </div>
 
       <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-pink-300 shadow-pop space-y-8 text-center relative overflow-hidden">
-        
         <div class="space-y-2">
           <span class="text-xs font-bold uppercase tracking-widest text-pink-500">Phonics Puzzle</span>
           <h3 class="text-3xl font-extrabold text-slate-800">Complete the Missing Letters!</h3>
@@ -461,10 +633,8 @@
           <i class="fa-solid fa-volume-high"></i>
         </button>
 
-        <!-- Missing Letter Display Slots -->
         <div id="fillLetterSlots" class="flex flex-wrap justify-center gap-2 sm:gap-3 my-6"></div>
 
-        <!-- Choice Bubbles -->
         <div class="space-y-3 pt-4 border-t border-slate-100">
           <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Tap matching letter choices:</span>
           <div id="fillLetterChoices" class="flex flex-wrap justify-center gap-2 sm:gap-3"></div>
@@ -474,9 +644,7 @@
       </div>
     </section>
 
-    <!-- ================= SCHOOL SPELLING & DICTATION TEST VIEW ================= -->
     <section id="view-test-mode" class="hidden space-y-6 max-w-3xl mx-auto">
-      
       <div class="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border-2 border-emerald-300 shadow-sm">
         <button onclick="switchView('dashboard')" class="text-slate-500 hover:text-slate-800 font-bold text-sm flex items-center">
           <i class="fa-solid fa-xmark mr-1.5"></i> Leave Test
@@ -490,7 +658,6 @@
       </div>
 
       <div class="bg-yellow-50 rounded-3xl p-6 sm:p-10 border-4 border-emerald-400 shadow-pop space-y-8 relative overflow-hidden">
-        
         <div class="border-b-2 border-emerald-300 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
             <h2 class="text-2xl font-extrabold text-emerald-900">Spelling & Sentence Dictation Test</h2>
@@ -537,10 +704,8 @@
       </div>
     </section>
 
-    <!-- ================= TEST RESULTS & REPORT CARD VIEW ================= -->
     <section id="view-test-results" class="hidden space-y-6 max-w-2xl mx-auto">
       <div class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 shadow-pop space-y-6 text-center relative overflow-hidden">
-        
         <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-3xl flex items-center justify-center text-4xl mx-auto border-2 border-amber-300">
           <i class="fa-solid fa-award"></i>
         </div>
@@ -586,7 +751,6 @@
     </div>
   </footer>
 
-  <!-- Javascript Game Logic -->
   <script>
     const PRESET_GRADE_DATA = {
       'k': {
@@ -693,7 +857,8 @@
       activeSentences: [],
       customWords: [],
       customSentences: [],
-      ocrImageData: null
+      ocrImageData: null,
+      ocrMimeType: 'image/png'
     };
 
     window.onload = function() {
@@ -725,7 +890,6 @@
       }
     }
 
-    /* Web Audio SFX Helper */
     function playSFX(type) {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -756,7 +920,6 @@
       } catch(e) {}
     }
 
-    /* Speech Synthesis Helper */
     function speakText(text, slow = false) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -767,13 +930,14 @@
       }
     }
 
-    /* Navigation View Switcher */
     function switchView(viewId) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
 
-      const views = ['dashboard', 'photo-upload', 'word-list', 'game-keepy-uppy', 'game-fill-blank', 'test-mode', 'test-results'];
+      window.removeEventListener('keydown', handleSnowmanKeydown);
+
+      const views = ['dashboard', 'photo-upload', 'word-list', 'game-keepy-uppy', 'game-snowman', 'game-box-pop', 'game-fill-blank', 'test-mode', 'test-results'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.add('hidden');
@@ -789,7 +953,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    /* Grade Selection Handler */
     function changeGrade(gradeKey) {
       currentState.currentGrade = gradeKey;
       document.getElementById('gradeSelect').value = gradeKey;
@@ -815,7 +978,6 @@
       renderManageLists();
     }
 
-    /* Render Preview Chips on Dashboard */
     function renderDashboardPreview() {
       const gradeTitle = gradeKeyToName(currentState.currentGrade);
       document.getElementById('activeGradeTitle').innerText = gradeTitle;
@@ -859,6 +1021,8 @@
       const file = event.target.files[0];
       if (!file) return;
 
+      currentState.ocrMimeType = file.type || 'image/png';
+
       const reader = new FileReader();
       reader.onload = function(e) {
         currentState.ocrImageData = e.target.result;
@@ -873,6 +1037,13 @@
     async function processPhotoWithGemini() {
       if (!currentState.ocrImageData) return;
 
+      const customApiKey = document.getElementById('geminiApiKeyInput').value.trim();
+      if (!customApiKey) {
+        alert("Please enter a valid Gemini API Key in the box above to scan your worksheet.");
+        document.getElementById('geminiApiKeyInput').focus();
+        return;
+      }
+
       const extractBtn = document.getElementById('extractBtn');
       const ocrLoading = document.getElementById('ocrLoading');
 
@@ -880,10 +1051,8 @@
       ocrLoading.classList.remove('hidden');
 
       try {
-        const base64Clean = currentState.ocrImageData.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
-        const customApiKey = document.getElementById('geminiApiKeyInput').value.trim();
-        const apiKey = customApiKey || "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const base64Clean = currentState.ocrImageData.replace(/^data:image\/[a-zA-Z]+;base64,/, '');
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${customApiKey}`;
 
         const prompt = `Read this spelling worksheet image carefully. Extract all spelling words, high-frequency words, and complete dictation sentences. Return ONLY a valid JSON object matching this schema:
 {
@@ -900,7 +1069,7 @@
             role: "user",
             parts: [
               { text: prompt },
-              { inlineData: { mimeType: "image/png", data: base64Clean } }
+              { inlineData: { mimeType: currentState.ocrMimeType, data: base64Clean } }
             ]
           }],
           generationConfig: {
@@ -920,30 +1089,25 @@
           const jsonText = result.candidates[0].content.parts[0].text;
           const parsed = JSON.parse(jsonText);
 
-          if (parsed.words) currentState.customWords = parsed.words;
-          if (parsed.sentences) currentState.customSentences = parsed.sentences;
+          if (parsed.words && parsed.words.length > 0) currentState.customWords = parsed.words;
+          if (parsed.sentences && parsed.sentences.length > 0) currentState.customSentences = parsed.sentences;
 
           changeGrade('custom');
           switchView('dashboard');
           alert(`Successfully extracted ${parsed.words?.length || 0} words and ${parsed.sentences?.length || 0} dictation sentences!`);
         } else {
-          alert('Could not read spelling words from image. Adding fallback words.');
-          currentState.customWords = [
-            { word: 'school', category: 'Custom', sentence: 'We go to school.' },
-            { word: 'friend', category: 'Custom', sentence: 'She is my friend.' }
-          ];
-          currentState.customSentences = ['My friend plays at school.'];
-          changeGrade('custom');
-          switchView('dashboard');
+          throw new Error(result.error?.message || "Invalid API response structure");
         }
 
       } catch (err) {
         console.error('OCR Error:', err);
+        alert(`Error scanning worksheet: ${err.message || "Failed to parse image"}. Loading fallback custom words.`);
+        
         currentState.customWords = [
-          { word: 'star', category: 'High Frequency', sentence: 'Look at the bright star.' },
-          { word: 'light', category: 'Sight Word', sentence: 'Turn on the light.' }
+          { word: 'school', category: 'Custom', sentence: 'We go to school.' },
+          { word: 'friend', category: 'Custom', sentence: 'She is my friend.' }
         ];
-        currentState.customSentences = ['The star shines at night.'];
+        currentState.customSentences = ['My friend plays at school.'];
         changeGrade('custom');
         switchView('dashboard');
       } finally {
@@ -952,7 +1116,6 @@
       }
     }
 
-    /* Word Bank Manager Functions */
     function renderManageLists() {
       document.getElementById('manageWordCount').innerText = currentState.activeWords.length;
       document.getElementById('manageSentenceCount').innerText = currentState.activeSentences.length;
@@ -1111,7 +1274,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       keepyGame.spawnTimer++;
-      if (keepyGame.spawnTimer > 120 && keepyGame.balloons.length < 4) {
+      if (keepyGame.spawnTimer > 180 && keepyGame.balloons.length < 3) {
         spawnBalloon(canvas.width);
         keepyGame.spawnTimer = 0;
       }
@@ -1119,8 +1282,8 @@
       for (let i = keepyGame.balloons.length - 1; i >= 0; i--) {
         const b = keepyGame.balloons[i];
         b.y += b.speed;
-        b.wobble += 0.05;
-        b.x += Math.sin(b.wobble) * 0.8;
+        b.wobble += 0.03;
+        b.x += Math.sin(b.wobble) * 0.5;
 
         ctx.save();
         ctx.translate(b.x, b.y);
@@ -1183,7 +1346,7 @@
         word: randomWordObj.word,
         x: Math.random() * (canvasWidth - 120) + 60,
         y: -50,
-        speed: 0.6 + Math.random() * 0.4,
+        speed: 0.12 + Math.random() * 0.10,
         color: colors[Math.floor(Math.random() * colors.length)],
         wobble: Math.random() * Math.PI
       });
@@ -1235,6 +1398,335 @@
       document.getElementById('keepyOverlayText').innerText = `Awesome try! You scored ${keepyGame.score} points and earned bonus stars!`;
     }
 
+    let snowmanGame = {
+      currentIndex: 0,
+      currentWordObj: null,
+      guessedLetters: new Set(),
+      wrongCount: 0,
+      maxWrong: 6,
+      gameOver: false
+    };
+
+    function startSnowmanGame() {
+      if (currentState.activeWords.length === 0) {
+        alert("Please select a word list first!");
+        return;
+      }
+
+      switchView('game-snowman');
+      snowmanGame.currentIndex = 0;
+
+      window.removeEventListener('keydown', handleSnowmanKeydown);
+      window.addEventListener('keydown', handleSnowmanKeydown);
+
+      loadSnowmanQuestion();
+    }
+
+    function handleSnowmanKeydown(e) {
+      const view = document.getElementById('view-game-snowman');
+      if (!view || view.classList.contains('hidden') || snowmanGame.gameOver) return;
+
+      if (/^[a-zA-Z]$/.test(e.key)) {
+        handleSnowmanGuess(e.key.toLowerCase());
+      }
+    }
+
+    function loadSnowmanQuestion() {
+      if (snowmanGame.currentIndex >= currentState.activeWords.length) {
+        snowmanGame.currentIndex = 0;
+      }
+
+      const wordObj = currentState.activeWords[snowmanGame.currentIndex];
+      snowmanGame.currentWordObj = wordObj;
+      snowmanGame.guessedLetters = new Set();
+      snowmanGame.wrongCount = 0;
+      snowmanGame.gameOver = false;
+
+      document.getElementById('snowmanCurrentIndex').innerText = snowmanGame.currentIndex + 1;
+      document.getElementById('snowmanTotalWords').innerText = currentState.activeWords.length;
+      document.getElementById('snowmanWrongCount').innerText = 0;
+
+      const maskedSentence = maskSentenceContext(wordObj.word, wordObj.sentence);
+      document.getElementById('snowmanSentenceContext').innerText = `"${maskedSentence}"`;
+
+      renderSnowmanSVG(0);
+      renderSnowmanLetterSlots();
+      renderSnowmanKeyboard();
+      document.getElementById('snowmanFeedback').classList.add('hidden');
+
+      speakText(wordObj.word);
+    }
+
+    function renderSnowmanSVG(wrongCount) {
+      for (let i = 1; i <= 6; i++) {
+        const part = document.getElementById(`sm-part-${i}`);
+        if (part) {
+          if (i <= wrongCount) {
+            part.classList.remove('opacity-0', 'scale-90');
+            part.classList.add('opacity-100', 'scale-100');
+          } else {
+            part.classList.remove('opacity-100', 'scale-100');
+            part.classList.add('opacity-0', 'scale-90');
+          }
+        }
+      }
+    }
+
+    function renderSnowmanLetterSlots() {
+      const container = document.getElementById('snowmanLetterSlots');
+      container.innerHTML = '';
+
+      const targetWord = snowmanGame.currentWordObj.word.toLowerCase();
+
+      for (let i = 0; i < targetWord.length; i++) {
+        const char = targetWord[i];
+        const isGuessed = snowmanGame.guessedLetters.has(char) || snowmanGame.gameOver;
+
+        const tile = document.createElement('div');
+        tile.className = 'w-10 h-12 sm:w-12 sm:h-14 bg-white border-3 border-cyan-400 rounded-2xl flex items-center justify-center font-extrabold text-2xl shadow-pop-sm text-slate-800 transition-all';
+
+        if (isGuessed) {
+          tile.innerText = char.toUpperCase();
+          if (!snowmanGame.guessedLetters.has(char) && snowmanGame.gameOver) {
+            tile.className += ' text-red-500 bg-red-50 border-red-300';
+          }
+        } else {
+          tile.innerText = '_';
+          tile.className += ' text-transparent bg-slate-50 border-dashed';
+        }
+
+        container.appendChild(tile);
+      }
+    }
+
+    function renderSnowmanKeyboard() {
+      const container = document.getElementById('snowmanKeyboard');
+      container.innerHTML = '';
+
+      const alphabet = "abcdefghijklmnopqrstuvwxyz".split('');
+
+      alphabet.forEach(letter => {
+        const btn = document.createElement('button');
+        const isGuessed = snowmanGame.guessedLetters.has(letter);
+        const targetWord = snowmanGame.currentWordObj.word.toLowerCase();
+        const isCorrect = isGuessed && targetWord.includes(letter);
+
+        btn.className = 'w-9 h-10 sm:w-10 sm:h-11 font-extrabold text-lg rounded-xl border-2 transition-all shadow-pop-sm flex items-center justify-center uppercase ';
+
+        if (isGuessed) {
+          btn.disabled = true;
+          if (isCorrect) {
+            btn.className += 'bg-emerald-500 border-emerald-600 text-white opacity-90';
+          } else {
+            btn.className += 'bg-slate-200 border-slate-300 text-slate-400 line-through';
+          }
+        } else {
+          btn.className += 'bg-white hover:bg-cyan-100 border-cyan-300 text-cyan-900 active:scale-90';
+          btn.onclick = () => handleSnowmanGuess(letter);
+        }
+
+        btn.innerText = letter;
+        container.appendChild(btn);
+      });
+    }
+
+    function handleSnowmanGuess(letter) {
+      if (snowmanGame.gameOver || snowmanGame.guessedLetters.has(letter)) return;
+
+      snowmanGame.guessedLetters.add(letter);
+      const targetWord = snowmanGame.currentWordObj.word.toLowerCase();
+
+      if (targetWord.includes(letter)) {
+        playSFX('success');
+
+        const allGuessed = targetWord.split('').every(ch => snowmanGame.guessedLetters.has(ch));
+
+        if (allGuessed) {
+          snowmanGame.gameOver = true;
+          addStars(2);
+          showSnowmanFeedback(true, "Awesome! You saved Frosty and guessed the word! ⭐");
+          setTimeout(() => {
+            snowmanGame.currentIndex++;
+            loadSnowmanQuestion();
+          }, 1800);
+        }
+      } else {
+        snowmanGame.wrongCount++;
+        document.getElementById('snowmanWrongCount').innerText = snowmanGame.wrongCount;
+        playSFX('wrong');
+        renderSnowmanSVG(snowmanGame.wrongCount);
+
+        if (snowmanGame.wrongCount >= snowmanGame.maxWrong) {
+          snowmanGame.gameOver = true;
+          showSnowmanFeedback(false, `Oh no! Frosty melted! The word was "${snowmanGame.currentWordObj.word.toUpperCase()}".`);
+          setTimeout(() => {
+            snowmanGame.currentIndex++;
+            loadSnowmanQuestion();
+          }, 2500);
+        }
+      }
+
+      renderSnowmanLetterSlots();
+      renderSnowmanKeyboard();
+    }
+
+    function showSnowmanFeedback(isSuccess, message) {
+      const feedbackEl = document.getElementById('snowmanFeedback');
+      feedbackEl.classList.remove('hidden');
+      if (isSuccess) {
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-emerald-100 text-emerald-800 border-2 border-emerald-300';
+      } else {
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-red-100 text-red-800 border-2 border-red-300';
+      }
+      feedbackEl.innerText = message;
+    }
+
+    function speakSnowmanCurrentWord() {
+      if (snowmanGame.currentWordObj) {
+        speakText(snowmanGame.currentWordObj.word);
+      }
+    }
+
+    let boxGame = {
+      currentIndex: 0,
+      currentWordObj: null,
+      options: []
+    };
+
+    function startBoxPopGame() {
+      if (currentState.activeWords.length === 0) {
+        alert("Please select a word list first!");
+        return;
+      }
+
+      switchView('game-box-pop');
+      boxGame.currentIndex = 0;
+      loadBoxPopQuestion();
+    }
+
+    function loadBoxPopQuestion() {
+      if (boxGame.currentIndex >= currentState.activeWords.length) {
+        boxGame.currentIndex = 0;
+      }
+
+      const wordObj = currentState.activeWords[boxGame.currentIndex];
+      boxGame.currentWordObj = wordObj;
+
+      document.getElementById('boxCurrentIndex').innerText = boxGame.currentIndex + 1;
+      document.getElementById('boxTotalWords').innerText = currentState.activeWords.length;
+
+      const maskedSentence = maskSentenceContext(wordObj.word, wordObj.sentence);
+      document.getElementById('boxSentenceContext').innerText = `"${maskedSentence}"`;
+
+      boxGame.options = generateMisspellings(wordObj.word);
+
+      renderBoxOptions();
+      document.getElementById('boxFeedback').classList.add('hidden');
+
+      speakText(wordObj.word);
+    }
+
+    function generateMisspellings(correctWord) {
+      const options = [correctWord];
+      const word = correctWord.toLowerCase();
+
+      function mutate(str) {
+        if (str.length <= 2) return str + 'e';
+        const arr = str.split('');
+        const choice = Math.floor(Math.random() * 4);
+
+        if (choice === 0 && arr.length > 3) {
+          const idx = Math.floor(Math.random() * (arr.length - 1));
+          const tmp = arr[idx];
+          arr[idx] = arr[idx + 1];
+          arr[idx + 1] = tmp;
+        } else if (choice === 1) {
+          const idx = Math.floor(Math.random() * arr.length);
+          arr[idx] = arr[idx] + arr[idx];
+        } else if (choice === 2) {
+          const vowels = ['a', 'e', 'i', 'o', 'u'];
+          for (let i = 0; i < arr.length; i++) {
+            if (vowels.includes(arr[i])) {
+              const otherVowels = vowels.filter(v => v !== arr[i]);
+              arr[i] = otherVowels[Math.floor(Math.random() * otherVowels.length)];
+              break;
+            }
+          }
+        } else {
+          arr.pop();
+        }
+        return arr.join('');
+      }
+
+      let attempts = 0;
+      while (options.length < 4 && attempts < 20) {
+        attempts++;
+        const wrong = mutate(word);
+        if (wrong !== word && !options.includes(wrong)) {
+          options.push(wrong);
+        }
+      }
+
+      while (options.length < 4) {
+        options.push(word + 's');
+      }
+
+      return options.sort(() => Math.random() - 0.5);
+    }
+
+    function renderBoxOptions() {
+      const container = document.getElementById('boxOptionsContainer');
+      container.innerHTML = '';
+
+      boxGame.options.forEach((optionText) => {
+        const btn = document.createElement('button');
+        btn.className = 'bg-amber-50 hover:bg-amber-100 text-amber-950 font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-amber-300 shadow-pop hover:shadow-pop-lg transition-transform active:scale-95 flex items-center justify-center space-x-3';
+        btn.innerHTML = `<i class="fa-solid fa-box-open text-amber-500 text-xl"></i> <span>${optionText}</span>`;
+        btn.onclick = () => selectBoxOption(optionText, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectBoxOption(selectedWord, btnElement) {
+      const targetWord = boxGame.currentWordObj.word.toLowerCase();
+      const isCorrect = selectedWord.toLowerCase() === targetWord;
+      const feedbackEl = document.getElementById('boxFeedback');
+      feedbackEl.classList.remove('hidden');
+
+      if (isCorrect) {
+        btnElement.className = 'bg-emerald-500 text-white font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-emerald-600 shadow-pop flex items-center justify-center space-x-3';
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-emerald-100 text-emerald-800 border-2 border-emerald-300';
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> Correct! That is the right box! ⭐`;
+        
+        addStars(1);
+        playSFX('success');
+
+        setTimeout(() => {
+          boxGame.currentIndex++;
+          loadBoxPopQuestion();
+        }, 1200);
+      } else {
+        btnElement.className = 'bg-red-100 text-red-800 font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-red-400 shadow-sm flex items-center justify-center space-x-3 opacity-60';
+        btnElement.disabled = true;
+
+        feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-red-100 text-red-800 border-2 border-red-300';
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> Not quite! Try another box.`;
+        playSFX('wrong');
+      }
+    }
+
+    function speakBoxCurrentWord() {
+      if (boxGame.currentWordObj) {
+        speakText(boxGame.currentWordObj.word);
+      }
+    }
+
+    function maskSentenceContext(word, sentence) {
+      if (!sentence) return "Listen to the word prompt...";
+      const regex = new RegExp(`\\b${word}\\b`, 'gi');
+      return sentence.replace(regex, '_____');
+    }
+
     let fillGame = {
       currentIndex: 0,
       currentWordObj: null,
@@ -1283,7 +1775,9 @@
 
       document.getElementById('fillCurrentIndex').innerText = fillGame.currentIndex + 1;
       document.getElementById('fillTotalWords').innerText = currentState.activeWords.length;
-      document.getElementById('fillSentenceContext').innerText = `"${wordObj.sentence || 'Listen to the word prompt.'}"`;
+
+      const maskedSentence = maskSentenceContext(wordObj.word, wordObj.sentence);
+      document.getElementById('fillSentenceContext').innerText = `"${maskedSentence}"`;
 
       const word = wordObj.word.toLowerCase();
       const numMissing = word.length > 4 ? 2 : 1;
@@ -1296,7 +1790,6 @@
         }
       }
 
-      // CRITICAL: Sort left to right
       fillGame.missingIndices.sort((a, b) => a - b);
 
       renderFillLetterSlots();
@@ -1429,15 +1922,12 @@
         return;
       }
 
-      // Build test queue: spell all target words first, followed by exactly 1 dictation sentence at the end
       testMode.questions = [];
 
-      // 1. Add all active spelling words
       currentState.activeWords.forEach(w => {
         testMode.questions.push({ type: 'word', target: w.word, context: w.sentence });
       });
 
-      // 2. Add exactly 1 dictation sentence at the end if available
       if (currentState.activeSentences.length > 0) {
         const selectedSentence = currentState.activeSentences[Math.floor(Math.random() * currentState.activeSentences.length)];
         testMode.questions.push({ type: 'sentence', target: selectedSentence, context: 'Dictation Sentence' });
