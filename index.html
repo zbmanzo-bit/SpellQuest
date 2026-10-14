@@ -1680,8 +1680,28 @@
 
       boxGame.options.forEach((optionText) => {
         const btn = document.createElement('button');
-        btn.className = 'bg-amber-50 hover:bg-amber-100 text-amber-950 font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-amber-300 shadow-pop hover:shadow-pop-lg transition-transform active:scale-95 flex items-center justify-center space-x-3';
-        btn.innerHTML = `<i class="fa-solid fa-box-open text-amber-500 text-xl"></i> <span>${optionText}</span>`;
+        btn.className = 'box-option-card group relative bg-gradient-to-b from-[#e8b87d] via-[#d69e5c] to-[#b87d3b] text-amber-950 font-extrabold p-5 rounded-3xl border-4 border-[#78461b] shadow-[0_10px_0_#542e0c] hover:shadow-[0_12px_0_#542e0c] hover:-translate-y-1 transition-all active:translate-y-1 active:shadow-[0_4px_0_#542e0c] flex flex-col items-center justify-between min-h-[145px] overflow-hidden cursor-pointer w-full';
+        
+        btn.innerHTML = `
+          <!-- Cardboard Box Top Flaps & Tape -->
+          <div class="w-full flex justify-between items-center px-2 py-1 bg-[#c88d4c] rounded-t-xl border-b-2 border-[#8c521f] -mt-2 -mx-2 mb-2 relative">
+            <div class="w-8 h-2 bg-[#f3e3ca]/40 rounded-full"></div>
+            <!-- Shipping Tape Strip -->
+            <div class="h-5 w-20 bg-[#f7e6c4]/60 border-x-2 border-dashed border-[#b37a3c] flex items-center justify-center text-[9px] text-[#78461b] font-extrabold tracking-widest uppercase">SPELL BOX</div>
+            <div class="w-8 h-2 bg-[#f3e3ca]/40 rounded-full"></div>
+          </div>
+
+          <!-- Printed Label on Box Center -->
+          <div class="box-label w-full bg-[#fdfbf7] py-3 px-4 rounded-2xl border-2 border-[#b87d3b] shadow-inner my-auto flex items-center justify-center group-hover:bg-white transition-colors">
+            <span class="text-2xl sm:text-3xl font-black text-slate-800 tracking-wide font-fredoka drop-shadow-sm">${optionText}</span>
+          </div>
+
+          <!-- Box Bottom Stamps / Details -->
+          <div class="w-full flex justify-between items-center text-[10px] text-[#542e0c]/80 font-black tracking-wider uppercase pt-2">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-arrow-up text-xs"></i><span>THIS SIDE UP</span></span>
+            <i class="fa-solid fa-barcode text-base opacity-70"></i>
+          </div>
+        `;
         btn.onclick = () => selectBoxOption(optionText, btn);
         container.appendChild(btn);
       });
@@ -1694,7 +1714,14 @@
       feedbackEl.classList.remove('hidden');
 
       if (isCorrect) {
-        btnElement.className = 'bg-emerald-500 text-white font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-emerald-600 shadow-pop flex items-center justify-center space-x-3';
+        btnElement.className = 'box-option-card relative bg-gradient-to-b from-emerald-400 via-emerald-500 to-emerald-700 text-white font-extrabold p-5 rounded-3xl border-4 border-emerald-900 shadow-[0_10px_0_#064e3b] transition-all flex flex-col items-center justify-between min-h-[145px] overflow-hidden cursor-default w-full scale-105 z-10';
+        
+        const label = btnElement.querySelector('.box-label');
+        if (label) {
+          label.className = 'box-label w-full bg-emerald-100 py-3 px-4 rounded-2xl border-2 border-emerald-600 shadow-inner my-auto flex items-center justify-center text-emerald-900 font-black text-2xl sm:text-3xl tracking-wide';
+          label.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> <span>${selectedWord}</span>`;
+        }
+
         feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-emerald-100 text-emerald-800 border-2 border-emerald-300';
         feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> Correct! That is the right box! ⭐`;
         
@@ -1706,8 +1733,13 @@
           loadBoxPopQuestion();
         }, 1200);
       } else {
-        btnElement.className = 'bg-red-100 text-red-800 font-extrabold text-2xl py-6 px-4 rounded-3xl border-4 border-red-400 shadow-sm flex items-center justify-center space-x-3 opacity-60';
+        btnElement.className = 'box-option-card relative bg-gradient-to-b from-red-200 via-red-300 to-red-400 text-red-950 font-extrabold p-5 rounded-3xl border-4 border-red-700 shadow-[0_4px_0_#7f1d1d] opacity-70 transition-all flex flex-col items-center justify-between min-h-[145px] overflow-hidden cursor-not-allowed w-full translate-y-1.5';
         btnElement.disabled = true;
+
+        const label = btnElement.querySelector('.box-label');
+        if (label) {
+          label.className = 'box-label w-full bg-red-100 py-3 px-4 rounded-2xl border-2 border-red-400 shadow-inner my-auto flex items-center justify-center text-red-800 font-black text-2xl sm:text-3xl tracking-wide line-through';
+        }
 
         feedbackEl.className = 'p-3 rounded-2xl font-extrabold text-center text-sm bg-red-100 text-red-800 border-2 border-red-300';
         feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> Not quite! Try another box.`;
